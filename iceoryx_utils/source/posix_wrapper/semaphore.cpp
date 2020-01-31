@@ -97,8 +97,13 @@ bool Semaphore::timedWait(const struct timespec* abs_timeout, const bool doConti
         // interruption error
         while (true)
         {
+#if __APPLE__
+            auto cCall = cxx::makeSmartC(
+                sem_trywait, cxx::ReturnMode::PRE_DEFINED_ERROR_CODE, {-1}, {ETIMEDOUT}, m_handlePtr, abs_timeout);
+#else
             auto cCall = cxx::makeSmartC(
                 sem_timedwait, cxx::ReturnMode::PRE_DEFINED_ERROR_CODE, {-1}, {ETIMEDOUT}, m_handlePtr, abs_timeout);
+#endif
             if (cCall.hasErrors())
             {
                 return false;
@@ -115,8 +120,13 @@ bool Semaphore::timedWait(const struct timespec* abs_timeout, const bool doConti
     }
     else
     {
-        auto cCall = cxx::makeSmartC(
-            sem_timedwait, cxx::ReturnMode::PRE_DEFINED_ERROR_CODE, {-1}, {ETIMEDOUT}, m_handlePtr, abs_timeout);
+#if __APPLE__
+            auto cCall = cxx::makeSmartC(
+                sem_trywait, cxx::ReturnMode::PRE_DEFINED_ERROR_CODE, {-1}, {ETIMEDOUT}, m_handlePtr, abs_timeout);
+#else
+            auto cCall = cxx::makeSmartC(
+                sem_timedwait, cxx::ReturnMode::PRE_DEFINED_ERROR_CODE, {-1}, {ETIMEDOUT}, m_handlePtr, abs_timeout);
+#endif
         if (cCall.hasErrors() || cCall.getErrNum() == ETIMEDOUT)
         {
             return false;

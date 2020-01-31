@@ -27,6 +27,10 @@
 #include <signal.h>
 #include <time.h>
 
+#if __APPLE__
+#define timer_t time_t
+#endif
+
 namespace iox
 {
 namespace posix
