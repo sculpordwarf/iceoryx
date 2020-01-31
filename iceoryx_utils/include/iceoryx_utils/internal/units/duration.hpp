@@ -22,6 +22,14 @@
 #include <iostream>
 #include <time.h>
 
+#ifdef __APPLE__
+struct itimerspec
+{
+    struct timespec it_value;
+    struct timespec it_interval;
+};
+#endif
+
 namespace iox
 {
 namespace units
